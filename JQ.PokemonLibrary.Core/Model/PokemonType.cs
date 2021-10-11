@@ -1,6 +1,12 @@
-﻿namespace JQ.PokemonLibrary.Core
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace JQ.PokemonLibrary.Core.Model
 {
-    public enum PokemonType
+    public class PokemonType
     {
+
+        [Key]
+        public int IdPokemonType { get; set; }
+        public string Description { get; set; }
     }
 }

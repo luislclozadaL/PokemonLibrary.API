@@ -29,18 +29,11 @@ namespace JQ.PokemonLibrary.Service
                 Message = "Pokemon Created Successfully",
                 Successfull = true
             };
-            var validationResult = pokemon.GetValidationResults();
-
-            if (!validationResult.Valid)
+            var commonValidations = CommonValidations(pokemon);
+            if (!String.IsNullOrEmpty(commonValidations.Message))
             {
-                baseResponse.Message = validationResult.EntityValidationErrors;
-                baseResponse.Successfull = false;
-                return baseResponse;
-            }
-            if (!String.IsNullOrEmpty(pokemon.Type2) && pokemon.Type1 == pokemon.Type2)
-            {
-                baseResponse.Message = "Pokemon types must be different or secondary type must be empty";
-                baseResponse.Successfull = false;
+                baseResponse.Message = commonValidations.Message;
+                baseResponse.Successfull = commonValidations.Successfull;
                 return baseResponse;
             }
             var currentNumber = await _pokemonRepository.GetMaxPokemonNumber();
@@ -75,26 +68,26 @@ namespace JQ.PokemonLibrary.Service
         public async Task<PokemonListServiceResponse> GetPokemonById(Guid pokemonId)
         {
             var serviceResponse = new PokemonListServiceResponse();
-            serviceResponse.Pokemons = await _pokemonRepository.GetListAsync(item => item.Id == pokemonId, null, null);
+            serviceResponse.Pokemons = await _pokemonRepository.GetListAsync(item => item.Id == pokemonId, null, "PokemonType1", "PokemonType2");
             return serviceResponse;
         }
 
         public async Task<PokemonListServiceResponse> GetPokemonByNumber(int pokemonNumber)
         {
             var serviceResponse = new PokemonListServiceResponse();
-            serviceResponse.Pokemons = await _pokemonRepository.GetListAsync(item => item.Number == pokemonNumber, null, null);
+            serviceResponse.Pokemons = await _pokemonRepository.GetListAsync(item => item.Number == pokemonNumber, null, "PokemonType1", "PokemonType2");
             return serviceResponse;
         }
 
         public async Task<PokemonListServiceResponse> GetPokemons(int? skip, int? take)
         {
             var serviceResponse = new PokemonListServiceResponse();
-            serviceResponse.Pokemons = await _pokemonRepository.GetAllAsync(new BaseQueryOptions<Pokemon> { Skip = skip, Take = take, OrderByAsc = item => item.Number }, null);
+            serviceResponse.Pokemons = await _pokemonRepository.GetAllAsync(new BaseQueryOptions<Pokemon> { Skip = skip, Take = take, OrderByAsc = item => item.Number }, "PokemonType1", "PokemonType2");
             //serviceResponse.Pokemons = await _pokemonRepository.GetListAsync(null, new BaseQueryOptions<Pokemon>{ Skip = skip, Take = take }, null);
             return serviceResponse;
         }
 
-        public async Task<PokemonListServiceResponse> GetPokemonsByCategory(string Category, int? skip, int? take)
+        public async Task<PokemonListServiceResponse> GetPokemonsByCategory(int Category, int? skip, int? take)
         {
             var serviceResponse = new PokemonListServiceResponse();
             serviceResponse.Pokemons = await _pokemonRepository.GetListAsync(item => item.Type1 == Category || item.Type2 == Category , new BaseQueryOptions<Pokemon> { Skip = skip, Take = take, OrderByAsc = item => item.Number }, null);
@@ -108,18 +101,11 @@ namespace JQ.PokemonLibrary.Service
                 Message = "Pokemon Updated Successfully",
                 Successfull = true
             };
-            var validationResult = pokemon.GetValidationResults();
-
-            if (!validationResult.Valid)
+            var commonValidations = CommonValidations(pokemon);
+            if (!String.IsNullOrEmpty(commonValidations.Message))
             {
-                baseResponse.Message = validationResult.EntityValidationErrors;
-                baseResponse.Successfull = false;
-                return baseResponse;
-            }
-            if (!String.IsNullOrEmpty(pokemon.Type2) && pokemon.Type1 == pokemon.Type2)
-            {
-                baseResponse.Message = "Pokemon types most be different or secondary type must be empty";
-                baseResponse.Successfull = false;
+                baseResponse.Message = commonValidations.Message;
+                baseResponse.Successfull = commonValidations.Successfull;
                 return baseResponse;
             }
 
@@ -130,6 +116,45 @@ namespace JQ.PokemonLibrary.Service
 
             dbPokemonEntity.EntityState = SharedKernel.Core.EntityState.Modified;
             await _pokemonRepository.UpdateAsync(dbPokemonEntity);
+            return baseResponse;
+        }
+    
+    
+        private BaseServiceResponse CommonValidations(Pokemon pokemon)
+        {
+            var baseResponse = new BaseServiceResponse();
+            var validationResult = pokemon.GetValidationResults();
+      
+            if (!validationResult.Valid)
+            {
+                baseResponse.Message = validationResult.EntityValidationErrors;
+                baseResponse.Successfull = false;
+                return baseResponse;
+            }
+            if (pokemon.Type2 == null && pokemon.Type1 == pokemon.Type2)
+            {
+                baseResponse.Message = "Pokemon types must be different or secondary type must be empty";
+                baseResponse.Successfull = false;
+                return baseResponse;
+            }
+            if (pokemon.Type2 != null && pokemon.Type1 == 0)
+            {
+                baseResponse.Message = "Pokemon type1 is required";
+                baseResponse.Successfull = false;
+                return baseResponse;
+            }
+            if (pokemon.Generation == 0 || pokemon.Generation > 7)
+            {
+                baseResponse.Message = "Pokemon Generation must not be 0 and we are currently finding the 7th one";
+                baseResponse.Successfull = false;
+                return baseResponse;
+            }
+            if (pokemon.HP == 0 || pokemon.Attack == 0 || pokemon.Defense == 0 || pokemon.SpecialMoveAttack == 0 || pokemon.SpecialMoveDefense == 0)
+            {
+                baseResponse.Message = "Pokemon stats must not be 0";
+                baseResponse.Successfull = false;
+                return baseResponse;
+            }
             return baseResponse;
         }
     }

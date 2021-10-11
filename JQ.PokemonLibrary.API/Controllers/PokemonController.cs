@@ -34,7 +34,7 @@ namespace JQ.PokemonLibrary.API.Controllers
             apiResponse.Data = bServiceResponse.Message;
             apiResponse.Success = bServiceResponse.Successfull;
 
-            return apiResponse.Success ? CreatedAtAction(nameof(GetPokemonsById), new { pokemonId = pokemonEntity.Id }, pokemonEntity) : BadRequest(apiResponse);
+            return apiResponse.Success ? CreatedAtAction(nameof(GetPokemonsById), new { pokemonId = pokemonEntity.Id }, new ApiResponse<PokemonDTO>() { Success= true, Data = _mapper.Map<Pokemon, PokemonDTO>(pokemonEntity) }) : BadRequest(apiResponse);
         }
 
         [HttpPut]
@@ -79,9 +79,9 @@ namespace JQ.PokemonLibrary.API.Controllers
         [Route("{pokemonId:Guid}")]
         public async Task<IActionResult> GetPokemonsById(Guid pokemonId)
         {
-            var apiResponse = new ApiResponse<IList<Pokemon>>();
+            var apiResponse = new ApiResponse<IList<PokemonDTO>>();
             var bServiceResponse = await _pokemonLibraryService.GetPokemonById(pokemonId);
-            apiResponse.Data = bServiceResponse.Pokemons;
+            apiResponse.Data = _mapper.Map(bServiceResponse.Pokemons, apiResponse.Data);
             apiResponse.Success = bServiceResponse.Successfull;
             return Ok(apiResponse);
         }

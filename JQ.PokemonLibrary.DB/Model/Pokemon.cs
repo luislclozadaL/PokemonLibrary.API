@@ -1,30 +1,30 @@
-﻿using JQ.PokemonLibrary.SharedKernel.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace JQ.PokemonLibrary.Core.Model
+namespace JQ.PokemonLibrary.DB.Model
 {
-    public class Pokemon : BaseEntity
+    public class Pokemon
     {
         [Key]
         public Guid Id { get; set; }
         public int Number { get; set; }
-
         [Required]
         public string Name { get; set; }
-
+        
         [Required]
         [Column("Type1")]
         public int Type1 { get; set; }
-
         [ForeignKey("Type1")]
         public PokemonType PokemonType1 { get; set; }
 
         [Column("Type2")]
         public int? Type2 { get; set; }
+
         [ForeignKey("Type2")]
         public PokemonType PokemonType2 { get; set; }
 
@@ -54,11 +54,5 @@ namespace JQ.PokemonLibrary.Core.Model
 
         [Required]
         public bool Legendary { get; set; }
-
-        public void CalculateTotalPower()
-        {
-            Total = HP + Attack + Defense + SpecialMoveAttack + SpecialMoveDefense + Speed;
-        }
-
     }
 }
