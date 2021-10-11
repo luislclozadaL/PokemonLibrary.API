@@ -1,3 +1,4 @@
+using JQ.PokemonLibrary.API.Configuration;
 using JQ.PokemonLibrary.Core.Repositories;
 using JQ.PokemonLibrary.Core.Services;
 using JQ.PokemonLibrary.Data.Repositories;
@@ -34,13 +35,15 @@ namespace JQ.PokemonLibrary.API
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "JQ.PokemonLibrary.API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Welcome to the pokemon library", Version = "v1" });
             });
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             services.AddTransient<IPokemonLibraryRepository, PokemonLibraryRepository>();
             services.AddTransient<IPokemonLibraryService, PokemonLibraryService>();
-            
         }
+
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -51,13 +54,10 @@ namespace JQ.PokemonLibrary.API
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "JQ.PokemonLibrary.API v1"));
             }
-
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
