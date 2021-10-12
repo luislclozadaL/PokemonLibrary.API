@@ -4,8 +4,8 @@ namespace JQ.PokemonLibrary.API.Models
     public class CreatePokemonDTO
     {
         public string Name { get; set; }
-        public string Type1 { get; set; }
-        public string Type2 { get; set; }
+        public int Type1 { get; set; }
+        public int Type2 { get; set; }
         public int HP { get; set; }
         public int Attack { get; set; }
         public int Defense { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace JQ.PokemonLibrary.SharedKernel.Core
         Task<List<T>> GetListAsync(Func<T, bool> where, IQueryOptions<T> options, params string[] includes);
 
         T GetSingle(Func<T, bool> where, params string[] includes);
-        Task<T> GetSingleAsync(Func<T, bool> where, params string[] includes);
+        Task<T> GetSingleAsync(Expression<Func<T, bool>> where, params string[] includes);
 
         void Add(params T[] items);
         Task AddAsync(params T[] items);

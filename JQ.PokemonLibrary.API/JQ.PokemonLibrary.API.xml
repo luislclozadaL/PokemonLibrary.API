@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>JQ.PokemonLibrary.API</name>
+    </assembly>
+    <members>
+        <member name="T:JQ.PokemonLibrary.API.Controllers.PokemonController">
+            <summary>
+            This controller allows you to perform CRUD operations on the pokemons of our database.
+            </summary>
+        </member>
+        <member name="M:JQ.PokemonLibrary.API.Controllers.PokemonController.#ctor(JQ.PokemonLibrary.Core.Services.IPokemonLibraryService,AutoMapper.IMapper)">
+            <summary>
+            
+            </summary>
+            <param name="pokemonLibraryService">Requires a concrete class implementing IPokemonLibraryService contract</param>
+            <param name="mapper">Requires an instance of automapper with already setup map configurations</param>
+        </member>
+        <member name="M:JQ.PokemonLibrary.API.Controllers.PokemonController.GetPokemons(System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            With this method you'll be able to query the whole pokemon's list and get paginated results when the optional 
+            parameters page size and page number are specified.
+            </summary>
+            <remarks>
+            If you want to incorporate this method to a UI you're encouraged to use also the pokemon/info method where you'll 
+            get the number of records in the DB so you can calculate
+            how many pages you will have based on you custom page size.
+            </remarks>
+            <param name="pageSize" example="10">Number of records per page.</param>
+            <param name="pageNumber" example="2">User selected page.</param>
+            <returns></returns>
+        </member>
+        <member name="M:JQ.PokemonLibrary.API.Controllers.PokemonController.GetPokemonsById(System.Guid)">
+            <summary>
+            Method to retrieve a pokemon by our database ID
+            </summary>
+            <remarks>
+            We had to create our own id due to the fact that the list of pokemons now have several types of charizards, blastoise, etc... 
+            but they keep the same pokemon number.
+            </remarks>
+            <param name="pokemonId" example="FD806A63-6E2A-4C41-A48A-029CAB6544F5">Our database pokemonID.</param>
+            <returns></returns>
+        </member>
+        <member name="M:JQ.PokemonLibrary.API.Controllers.PokemonController.GetPokemonsByNumber(System.Int32)">
+            <summary>
+            Method to retrieve a pokemon or all the pokemons with the same original discovery number.
+            </summary>
+            <remarks>
+            This method might return more than one record based on the recent discoveries of pokemon subtypes
+            </remarks>
+            <param name="pokemonNumber">Original Pokemon List Number.</param>
+            <returns></returns>
+        </member>
+        <member name="M:JQ.PokemonLibrary.API.Controllers.PokemonController.GetPokemonsInfo">
+            <summary>
+            This method will allow you to get the number of records registered in the DB.
+            </summary>
+            <remarks>
+            Usefull to calculate the number of pages you'll render on a UI.
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="M:JQ.PokemonLibrary.API.Controllers.PokemonController.CreatePokemon(JQ.PokemonLibrary.API.Models.CreatePokemonDTO)">
+            <summary>
+            This method allows you to register a new Pokemon
+            </summary>
+            <remarks>
+            But there are limitations!! Only six generations have been discovered so far. There are rumors that a 7th one just appeared on a 
+            remote island in the confines of the earth. So you're only allowed to register pokemon from generations 1 to 7.
+            
+            To review available Pokemon Types check the method Get on the PokemonType Resource
+            </remarks>
+            <param name="pokemon">The pokemon object.</param>
+            <returns></returns>
+        </member>
+        <member name="M:JQ.PokemonLibrary.API.Controllers.PokemonController.UpdatePokemon(System.Guid,JQ.PokemonLibrary.API.Models.UpdatePokemonDTO)">
+            <summary>
+            This method allows you to update an existing Pokemon (requires a pokemonid of our Database and not the pokemon discovery number.
+            </summary>
+            <remarks>
+            Pokemon number cannot be modified
+            </remarks>
+            <param name="pokemonId">Our database pokemonId.</param>
+            <param name="pokemon">The pokemon object.</param>
+            <returns></returns>
+        </member>
+        <member name="M:JQ.PokemonLibrary.API.Controllers.PokemonController.PatchPokemon(System.Guid,JQ.PokemonLibrary.API.Models.PatchPokemonDTO)">
+            <summary>
+            Method that allows you to partially update a pokemon
+            </summary>
+            <param name="pokemonId">Our database pokemonId.</param>
+            <param name="pokemon">The pokemon object.</param>
+            <returns></returns>
+        </member>
+        <member name="M:JQ.PokemonLibrary.API.Controllers.PokemonController.DeletePokemon(System.Guid)">
+            <summary>
+            Method to remove pokemons
+            </summary>
+            <remarks>
+            Everybody makes mistakes and we know that you might want to register a pokemon that already exists, no hard feelings you can remove it with our database id.
+            </remarks>
+            <param name="pokemonId">Our database pokemonId.</param>
+            <returns></returns>
+        </member>
+        <member name="M:JQ.PokemonLibrary.API.Controllers.PokemonTypeController.GetPokemonTypes">
+            <summary>
+            Catalog for pokemon types
+            </summary>
+            <remarks>
+            This method is usefull for the types in the pokemon object for the create, update and patch.
+            </remarks>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

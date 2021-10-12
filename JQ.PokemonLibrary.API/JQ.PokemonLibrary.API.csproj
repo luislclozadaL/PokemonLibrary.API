@@ -1,7 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>D:\Projects\JourneesQuebec\PokemonLibrary\JQ.PokemonLibrary.API\JQ.PokemonLibrary.API.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,9 +25,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\JQ,PokemonLibrary.Catalogs.Service\JQ,PokemonLibrary.Catalogs.Service.csproj" />
+    <ProjectReference Include="..\JQ.PokemonLibrary.Catalogs.Core\JQ.PokemonLibrary.Catalogs.Core.csproj" />
+    <ProjectReference Include="..\JQ.PokemonLibrary.Catalogs.Data\JQ.PokemonLibrary.Catalogs.Data.csproj" />
     <ProjectReference Include="..\JQ.PokemonLibrary.Core\JQ.PokemonLibrary.Core.csproj" />
     <ProjectReference Include="..\JQ.PokemonLibrary.Data\JQ.PokemonLibrary.Data.csproj" />
+    <ProjectReference Include="..\JQ.PokemonLibrary.DB\JQ.PokemonLibrary.DB.csproj" />
     <ProjectReference Include="..\JQ.PokemonLibrary.Service\JQ.PokemonLibrary.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="JQ.PokemonLibrary.API.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

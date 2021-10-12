@@ -9,6 +9,6 @@ namespace JQ.PokemonLibrary.API.Base
     {
         public T Data { get; set; }
         public bool Success { get; set; }
-        public Exception Exception { get; set; }
+        public string Exception { get; set; }
     }
 }

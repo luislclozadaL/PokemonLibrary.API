@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
 using JQ.PokemonLibrary.Core.DTOs;
 using JQ.PokemonLibrary.Core.Model;
+using JQ.PokemonLibrary.Core.Model.Validations;
 using JQ.PokemonLibrary.Core.Repositories;
 using JQ.PokemonLibrary.Core.Services;
 using JQ.PokemonLibrary.SharedKernel.Base;
 using JQ.PokemonLibrary.SharedKernel.Core;
 using JQ.PokemonLibrary.SharedKernel.Extensions;
 using System;
-
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace JQ.PokemonLibrary.Service
@@ -29,18 +30,11 @@ namespace JQ.PokemonLibrary.Service
                 Message = "Pokemon Created Successfully",
                 Successfull = true
             };
-            var validationResult = pokemon.GetValidationResults();
-
-            if (!validationResult.Valid)
+            var commonValidations = CommonValidations(pokemon);
+            if (!String.IsNullOrEmpty(commonValidations.Message))
             {
-                baseResponse.Message = validationResult.EntityValidationErrors;
-                baseResponse.Successfull = false;
-                return baseResponse;
-            }
-            if (!String.IsNullOrEmpty(pokemon.Type2) && pokemon.Type1 == pokemon.Type2)
-            {
-                baseResponse.Message = "Pokemon types must be different or secondary type must be empty";
-                baseResponse.Successfull = false;
+                baseResponse.Message = commonValidations.Message;
+                baseResponse.Successfull = commonValidations.Successfull;
                 return baseResponse;
             }
             var currentNumber = await _pokemonRepository.GetMaxPokemonNumber();
@@ -72,31 +66,38 @@ namespace JQ.PokemonLibrary.Service
             return response;
         }
 
-        public async Task<PokemonListServiceResponse> GetPokemonById(Guid pokemonId)
+        public async Task<NumberOfPokemonsServiceResponse> GetNumberOfPokemons()
         {
-            var serviceResponse = new PokemonListServiceResponse();
-            serviceResponse.Pokemons = await _pokemonRepository.GetListAsync(item => item.Id == pokemonId, null, null);
+            var serviceResponse = new NumberOfPokemonsServiceResponse() { Successfull = true };
+            serviceResponse.NumberOfPokemons = await _pokemonRepository.GetMaxPokemonNumber();
+            return serviceResponse;
+        }
+
+        public async Task<PokemonServiceResponse> GetPokemonById(Guid pokemonId)
+        {
+            var serviceResponse = new PokemonServiceResponse() { Successfull = true };
+            serviceResponse.Pokemon = (await _pokemonRepository.GetListAsync(item => item.Id == pokemonId, null, "PokemonType1", "PokemonType2")).FirstOrDefault();
             return serviceResponse;
         }
 
         public async Task<PokemonListServiceResponse> GetPokemonByNumber(int pokemonNumber)
         {
-            var serviceResponse = new PokemonListServiceResponse();
-            serviceResponse.Pokemons = await _pokemonRepository.GetListAsync(item => item.Number == pokemonNumber, null, null);
+            var serviceResponse = new PokemonListServiceResponse() { Successfull = true };
+            serviceResponse.Pokemons = await _pokemonRepository.GetListAsync(item => item.Number == pokemonNumber, null, "PokemonType1", "PokemonType2");
             return serviceResponse;
         }
 
         public async Task<PokemonListServiceResponse> GetPokemons(int? skip, int? take)
         {
-            var serviceResponse = new PokemonListServiceResponse();
-            serviceResponse.Pokemons = await _pokemonRepository.GetAllAsync(new BaseQueryOptions<Pokemon> { Skip = skip, Take = take, OrderByAsc = item => item.Number }, null);
+            var serviceResponse = new PokemonListServiceResponse() { Successfull = true };
+            serviceResponse.Pokemons = await _pokemonRepository.GetAllAsync(new BaseQueryOptions<Pokemon> { Skip = skip, Take = take, OrderByAsc = item => item.Number }, "PokemonType1", "PokemonType2");
             //serviceResponse.Pokemons = await _pokemonRepository.GetListAsync(null, new BaseQueryOptions<Pokemon>{ Skip = skip, Take = take }, null);
             return serviceResponse;
         }
 
-        public async Task<PokemonListServiceResponse> GetPokemonsByCategory(string Category, int? skip, int? take)
+        public async Task<PokemonListServiceResponse> GetPokemonsByCategory(int Category, int? skip, int? take)
         {
-            var serviceResponse = new PokemonListServiceResponse();
+            var serviceResponse = new PokemonListServiceResponse() { Successfull = true };
             serviceResponse.Pokemons = await _pokemonRepository.GetListAsync(item => item.Type1 == Category || item.Type2 == Category , new BaseQueryOptions<Pokemon> { Skip = skip, Take = take, OrderByAsc = item => item.Number }, null);
             return serviceResponse;
         }
@@ -108,18 +109,11 @@ namespace JQ.PokemonLibrary.Service
                 Message = "Pokemon Updated Successfully",
                 Successfull = true
             };
-            var validationResult = pokemon.GetValidationResults();
-
-            if (!validationResult.Valid)
+            var commonValidations = CommonValidations(pokemon);
+            if (!String.IsNullOrEmpty(commonValidations.Message))
             {
-                baseResponse.Message = validationResult.EntityValidationErrors;
-                baseResponse.Successfull = false;
-                return baseResponse;
-            }
-            if (!String.IsNullOrEmpty(pokemon.Type2) && pokemon.Type1 == pokemon.Type2)
-            {
-                baseResponse.Message = "Pokemon types most be different or secondary type must be empty";
-                baseResponse.Successfull = false;
+                baseResponse.Message = commonValidations.Message;
+                baseResponse.Successfull = commonValidations.Successfull;
                 return baseResponse;
             }
 
@@ -130,6 +124,25 @@ namespace JQ.PokemonLibrary.Service
 
             dbPokemonEntity.EntityState = SharedKernel.Core.EntityState.Modified;
             await _pokemonRepository.UpdateAsync(dbPokemonEntity);
+            return baseResponse;
+        }
+    
+    
+        private BaseServiceResponse CommonValidations(Pokemon pokemon)
+        {
+            var baseResponse = new BaseServiceResponse();
+            var assembly = System.Reflection.Assembly.GetAssembly(typeof(Pokemon));
+            foreach (var validationRuleClass in assembly.GetTypes().Where(item => item.GetInterfaces().Contains(typeof(IPokemonValidation)))) {
+                var instance =(IPokemonValidation)Activator.CreateInstance(validationRuleClass);
+                var result = instance.Validate(pokemon);
+                if (result.Successfull == false)
+                {
+                    baseResponse.Message = result.Message;
+                    baseResponse.Successfull = result.Successfull;
+                    break;
+                }
+                instance = null;
+            }
             return baseResponse;
         }
     }

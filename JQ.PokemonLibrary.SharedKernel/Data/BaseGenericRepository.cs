@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EntityState = JQ.PokemonLibrary.SharedKernel.Core;
 
@@ -183,7 +184,7 @@ namespace JQ.PokemonLibrary.SharedKernel.Core
                 .FirstOrDefault(where); //Apply where clause            
             return item;
         }
-        public async virtual Task<T> GetSingleAsync(Func<T, bool> where, params string[] includes)
+        public virtual Task<T> GetSingleAsync(Expression<Func<T, bool>> where, params string[] includes)
         {
             IQueryable<T> dbQuery = _context.Set<T>();
 
@@ -194,14 +195,12 @@ namespace JQ.PokemonLibrary.SharedKernel.Core
                     dbQuery = dbQuery.Include(include);
                 }
             }
-            dbQuery = dbQuery
+            return dbQuery
                 .AsNoTracking()
-                .Where(where)
-                .AsQueryable();
+                .FirstOrDefaultAsync(where, new System.Threading.CancellationToken());
 
-            var result = await EntityExtensions.ToListAsyncSafe<T>(dbQuery);
-            return result.FirstOrDefault();
         }
+
         public virtual void Add(params T[] items)
         {
             Update(items);
