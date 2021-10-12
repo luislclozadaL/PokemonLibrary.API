@@ -8,7 +8,7 @@ While i was going through the list of pokemons i realized that the list had more
 - CharizardMega Charizard X
 - CharizardMega Charizard Y
 
-This made me change the list and basically i added a primary key for every record, that primary key is required for the PUT, PATCH and one the GET methods, if i would have picked the number as the primary key for the mentioned operations the action might have affected more than one record at at time.
+This made me change the list and basically i added a primary key for every record, that primary key is required for the PUT, PATCH and one the GET methods, if i would have picked the number as the primary key for the mentioned operations the action might have affected more than one record at time.
 
 The Pokemon Library API has basic CRUD operations as per requirement, but on the inside, I applied (to the best of my knowledge) best practices and coding patterns; more details next:
 
