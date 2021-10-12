@@ -16,18 +16,18 @@
             <param name="pokemonLibraryService">Requires a concrete class implementing IPokemonLibraryService contract</param>
             <param name="mapper">Requires an instance of automapper with already setup map configurations</param>
         </member>
-        <member name="M:JQ.PokemonLibrary.API.Controllers.PokemonController.GetPokemons(System.Nullable{System.Int32},System.Nullable{System.Int32})">
+        <member name="M:JQ.PokemonLibrary.API.Controllers.PokemonController.GetPokemonsWithSearchParameters(System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
-            With this method you'll be able to query the whole pokemon's list and get paginated results when the optional 
+            With this method you'll be able to query the whole pokemon's list with the posibility to filter by name, type1 type 2 and get paginated results when the optional 
             parameters page size and page number are specified.
             </summary>
             <remarks>
-            If you want to incorporate this method to a UI you're encouraged to use also the pokemon/info method where you'll 
-            get the number of records in the DB so you can calculate
-            how many pages you will have based on you custom page size.
             </remarks>
-            <param name="pageSize" example="10">Number of records per page.</param>
-            <param name="pageNumber" example="2">User selected page.</param>
+            <param name="name" example="">Pokemon Name.</param>
+            <param name="type1" example="0">type from the pokemontype catalog.</param>
+            <param name="type2" example="0">type from the pokemontype catalog.</param>
+            <param name="pageSize" example="100">Number of records per page.</param>
+            <param name="pageNumber" example="1">User selected page.</param>
             <returns></returns>
         </member>
         <member name="M:JQ.PokemonLibrary.API.Controllers.PokemonController.GetPokemonsById(System.Guid)">
@@ -58,6 +58,20 @@
             <remarks>
             Usefull to calculate the number of pages you'll render on a UI.
             </remarks>
+            <returns></returns>
+        </member>
+        <member name="M:JQ.PokemonLibrary.API.Controllers.PokemonController.GetPokemonsWithSearchParametersInfo(System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            This method will allow you to get the number of records you'll get when using the search controller.
+            </summary>
+            <remarks>
+            Usefull to calculate the number of pages you'll render on a UI.
+            </remarks>
+            <param name="name" example="">Pokemon Name.</param>
+            <param name="type1" example="0">type from the pokemontype catalog.</param>
+            <param name="type2" example="0">type from the pokemontype catalog.</param>
+            <param name="pageSize" example="100">Number of records per page.</param>
+            <param name="pageNumber" example="1">User selected page.</param>
             <returns></returns>
         </member>
         <member name="M:JQ.PokemonLibrary.API.Controllers.PokemonController.CreatePokemon(JQ.PokemonLibrary.API.Models.CreatePokemonDTO)">

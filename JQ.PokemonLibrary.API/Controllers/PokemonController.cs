@@ -34,26 +34,51 @@ namespace JQ.PokemonLibrary.API.Controllers
             _mapper = mapper;
         }
 
+        ///// <summary>
+        ///// With this method you'll be able to query the whole pokemon's list and get paginated results when the optional 
+        ///// parameters page size and page number are specified.
+        ///// </summary>
+        ///// <remarks>
+        ///// If you want to incorporate this method to a UI you're encouraged to use also the pokemon/info method where you'll 
+        ///// get the number of records in the DB so you can calculate
+        ///// how many pages you will have based on you custom page size.
+        ///// </remarks>
+        ///// <param name="pageSize" example="10">Number of records per page.</param>
+        ///// <param name="pageNumber" example="2">User selected page.</param>
+        ///// <returns></returns>
+        //[ProducesResponseType(typeof(ApiResponse<IList<PokemonDTO>>), (int)HttpStatusCode.OK)]
+        //[ProducesResponseType(typeof(ApiResponse<string>), (int)HttpStatusCode.InternalServerError)]
+        //[HttpGet]
+        //[Route("")]
+        //public async Task<IActionResult> GetPokemons(int? pageSize = 0, int? pageNumber = 0)
+        //{
+        //    var apiResponse = new ApiResponse<IList<PokemonDTO>>();
+        //    var bServiceResponse = await _pokemonLibraryService.GetPokemons(pageNumber * pageSize, pageSize);
+        //    apiResponse.Data = _mapper.Map(bServiceResponse.Pokemons, apiResponse.Data);
+        //    apiResponse.Success = bServiceResponse.Successfull;
+        //    return Ok(apiResponse);
+        //}
+
         /// <summary>
-        /// With this method you'll be able to query the whole pokemon's list and get paginated results when the optional 
+        /// With this method you'll be able to query the whole pokemon's list with the posibility to filter by name, type1 type 2 and get paginated results when the optional 
         /// parameters page size and page number are specified.
         /// </summary>
         /// <remarks>
-        /// If you want to incorporate this method to a UI you're encouraged to use also the pokemon/info method where you'll 
-        /// get the number of records in the DB so you can calculate
-        /// how many pages you will have based on you custom page size.
         /// </remarks>
-        /// <param name="pageSize" example="10">Number of records per page.</param>
-        /// <param name="pageNumber" example="2">User selected page.</param>
+        /// <param name="name" example="">Pokemon Name.</param>
+        /// <param name="type1" example="0">type from the pokemontype catalog.</param>
+        /// <param name="type2" example="0">type from the pokemontype catalog.</param>
+        /// <param name="pageSize" example="100">Number of records per page.</param>
+        /// <param name="pageNumber" example="1">User selected page.</param>
         /// <returns></returns>
         [ProducesResponseType(typeof(ApiResponse<IList<PokemonDTO>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResponse<string>), (int)HttpStatusCode.InternalServerError)]
         [HttpGet]
         [Route("")]
-        public async Task<IActionResult> GetPokemons(int? pageSize = 0, int? pageNumber = 0)
+        public async Task<IActionResult> GetPokemonsWithSearchParameters(string name, int type1 = 0, int type2 = 0, int pageSize = 0, int pageNumber = 0)
         {
             var apiResponse = new ApiResponse<IList<PokemonDTO>>();
-            var bServiceResponse = await _pokemonLibraryService.GetPokemons(pageNumber * pageSize, pageSize);
+            var bServiceResponse = await _pokemonLibraryService.GetPokemons(name, type1 == 0 ? null : type1, type2 == 0 ? null : type2, (pageNumber -1) * pageSize, pageSize);
             apiResponse.Data = _mapper.Map(bServiceResponse.Pokemons, apiResponse.Data);
             apiResponse.Success = bServiceResponse.Successfull;
             return Ok(apiResponse);
@@ -119,6 +144,31 @@ namespace JQ.PokemonLibrary.API.Controllers
             var apiResponse = new ApiResponse<InfoDTO>();
             var bServiceResponse = await _pokemonLibraryService.GetNumberOfPokemons();
             apiResponse.Data = new InfoDTO { NumberOfRecords = bServiceResponse.NumberOfPokemons };
+            apiResponse.Success = bServiceResponse.Successfull;
+            return Ok(apiResponse);
+        }
+
+        /// <summary>
+        /// This method will allow you to get the number of records you'll get when using the search controller.
+        /// </summary>
+        /// <remarks>
+        /// Usefull to calculate the number of pages you'll render on a UI.
+        /// </remarks>
+        /// <param name="name" example="">Pokemon Name.</param>
+        /// <param name="type1" example="0">type from the pokemontype catalog.</param>
+        /// <param name="type2" example="0">type from the pokemontype catalog.</param>
+        /// <param name="pageSize" example="100">Number of records per page.</param>
+        /// <param name="pageNumber" example="1">User selected page.</param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApiResponse<InfoDTO>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResponse<string>), (int)HttpStatusCode.InternalServerError)]
+        [HttpGet]
+        [Route("SearchInfo")]
+        public async Task<IActionResult> GetPokemonsWithSearchParametersInfo(string name, int type1 = 0, int type2 = 0, int pageSize = 0, int pageNumber = 0)
+        {
+            var apiResponse = new ApiResponse<InfoDTO>() { Data = new InfoDTO()};
+            var bServiceResponse = await _pokemonLibraryService.GetPokemons(name, type1 == 0 ? null : type1, type2 == 0 ? null : type2, (pageNumber - 1) * pageSize, pageSize);
+            apiResponse.Data.NumberOfRecords = bServiceResponse.Pokemons.Count();
             apiResponse.Success = bServiceResponse.Successfull;
             return Ok(apiResponse);
         }

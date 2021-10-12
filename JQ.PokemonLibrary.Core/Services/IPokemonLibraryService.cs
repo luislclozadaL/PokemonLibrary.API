@@ -17,6 +17,7 @@ namespace JQ.PokemonLibrary.Core.Services
         public Task<PokemonListServiceResponse> GetPokemonByNumber(int pokemonNumber);
         public Task<PokemonListServiceResponse> GetPokemonsByCategory(int Category, int? skip, int? take);
         public Task<PokemonListServiceResponse> GetPokemons(int? skip, int? take);
+        public Task<PokemonListServiceResponse> GetPokemons(string name, int? type1, int? type2, int? skip, int? take);
         Task<DeletePokemonServiceResponse> DeletePokemon(Guid pokemonId);
         Task<NumberOfPokemonsServiceResponse> GetNumberOfPokemons();
     }

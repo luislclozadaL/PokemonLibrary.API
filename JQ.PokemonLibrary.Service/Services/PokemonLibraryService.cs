@@ -47,7 +47,7 @@ namespace JQ.PokemonLibrary.Service
         }
 
         public async Task<DeletePokemonServiceResponse> DeletePokemon(Guid pokemonId)
-        {           
+        {
             var response = new DeletePokemonServiceResponse()
             {
                 Message = "Pokemon Deleted Successfully",
@@ -91,7 +91,13 @@ namespace JQ.PokemonLibrary.Service
         {
             var serviceResponse = new PokemonListServiceResponse() { Successfull = true };
             serviceResponse.Pokemons = await _pokemonRepository.GetAllAsync(new BaseQueryOptions<Pokemon> { Skip = skip, Take = take, OrderByAsc = item => item.Number }, "PokemonType1", "PokemonType2");
-            //serviceResponse.Pokemons = await _pokemonRepository.GetListAsync(null, new BaseQueryOptions<Pokemon>{ Skip = skip, Take = take }, null);
+            return serviceResponse;
+        }
+
+        public async Task<PokemonListServiceResponse> GetPokemons(string name, int? type1, int? type2, int? skip, int? take)
+        {
+            var serviceResponse = new PokemonListServiceResponse() { Successfull = true };
+            serviceResponse.Pokemons = await _pokemonRepository.GetPokemonSearch(name, type1, type2, skip, take);
             return serviceResponse;
         }
 
